@@ -1,30 +1,28 @@
 # readILA.m
 
-This MATLAB script is designed to read data from a CSV file, process it, and save the processed data into a .mat file. The script specifically handles data related to the AMD/Xilinx Vivado ILA (Integrated Logic Analyzer).
+This MATLAB script is designed to read complex data from a CSV file named "waveform.csv", process it, and assemble it into complex numbers. The script is particularly useful for processing waveform data, where each data point consists of an imaginary and a real part.
 
 ## How it works
 
-1. The script first specifies the file path and name of the CSV file to be read. The file in this case is "iladata_evm_bad3.csv".
+1. **Initialization**: The script starts by setting up the number of columns and data points to be processed. It then specifies the file path and name of the CSV file to be read.
 
-2. It then specifies the columns to be read from the CSV file. The columns are "rx_out0_TVALID", "rx_out0_TREADY", and "rx_out0_TDATA".
+2. **Reading the CSV File**: The script uses `detectImportOptions` to specify which columns to read from the CSV file. The columns selected are "data2CFO_TVALID", "data2CFO_TDATA_im", and "data2CFO_TDATA_re". The data type for these columns is set to 'string'.
 
-3. The CSV file is read and the data is stored in a table.
+3. **Data Processing**:
+   - The script reads the specified columns from the CSV file into a table.
+   - It initializes arrays for storing the new data and the complex numbers.
+   - It iterates through each row of the table. For each row, it checks if the TVALID signal is high (1). The TREADY signal is assumed to be always high (1) in this script.
+   - For each valid data row, it processes the TDATA fields for both the imaginary and real parts. This involves:
+     - Extracting 4 hex characters at a time.
+     - Converting the extracted hex string to decimal.
+     - Checking if the number is negative and converting it to a signed 16-bit integer.
+     - Storing the processed data in an array.
 
-4. The script then initializes some variables and arrays to store the processed data.
-
-5. It then loops through each row of the data. For each row, it checks if the TVALID and TREADY values are both 1. If they are, it processes the TDATA value.
-
-6. The TDATA value is a hexadecimal string. The script extracts 4 hex characters at a time, converts them to decimal, checks if the number is negative, and then converts it to a signed 16-bit number.
-
-7. The processed data is stored in an array and then converted into a complex number.
-
-8. The script then removes any unused elements from the array of complex numbers.
-
-9. Finally, it displays the processed data and saves it to a .mat file named "iladata_evm_bad3.mat".
+4. **Complex Number Assembly**: The script assembles the processed data points into complex numbers, where each number consists of an imaginary and a real part.
 
 ## Usage
 
-To use this script, simply run it in MATLAB. Ensure that the CSV file "iladata_evm_bad3.csv" is in the same directory as the script or adjust the file path accordingly.
+To use this script, simply run it in MATLAB. Ensure that the CSV file "waveform.csv" is in the same directory as the script or adjust the file path accordingly.
 
 ## Requirements
 
@@ -32,4 +30,4 @@ This script requires MATLAB to run.
 
 ## Note
 
-This script only processes the TVALID, TREADY, and TDATA signals. It does not process the TUSER and TLAST signals. TVALID and TREADY are interface signals of the AXI-Stream channel. TVALID is driven by the source (master) side of the channel and indicates that the value in the payload field (TDATA) is valid. TREADY is driven by the receiver (slave) and indicates that the slave is ready to receive data. When both TVALID and TREADY are TRUE in a cycle, a transfer occurs. The master and slave set TVALID and TREADY respectively for the next transfer appropriately.
+This script is tailored for waveform data processing, where each data point in the CSV file has an imaginary and a real part. The TVALID signal is used to determine if the data is valid for processing. The TREADY signal is assumed to be always high (1) in this script, simplifying the control flow for data transfer.
